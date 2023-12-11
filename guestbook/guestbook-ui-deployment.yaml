@@ -14,21 +14,25 @@ spec:
         app: guestbook-ui
     spec:
       containers:
-      - image: gcr.io/heptio-images/ks-guestbook-demo:0.2
+      - image: nginx:latest
         name: guestbook-ui
         ports:
         - containerPort: 80
-
+        volumeMounts:
+        - mountPath: /usr/share/nginx/html
+          name: guestbook-ui-content
+      volumes:
+      - name: guestbook-ui-content
+        configMap:
+          name: guestbook-ui-content
 ---
 apiVersion: v1
 kind: Service
 metadata:
-  name: guestbook-ui-service
+  name: guestbook-ui
 spec:
+  ports:
+  - port: 80
+    targetPort: 80
   selector:
     app: guestbook-ui
-  ports:
-    - protocol: TCP
-      port: 80
-      targetPort: 80
-  type: LoadBalancer
